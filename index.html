@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SkyFlight - ค้นหาและจองตั๋วเครื่องบิน</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="container nav-inner">
+      <a href="index.html" class="logo">
+        <span class="logo-icon">✈</span>
+        <span>SkyFlight</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html" class="active">หน้าหลัก</a></li>
+        <li><a href="#search-section">ค้นหาเที่ยวบิน</a></li>
+        <li><a href="mybooking.html">การจองของฉัน</a></li>
+      </ul>
+      <div class="nav-actions">
+        <button class="btn btn-outline" onclick="openModal('loginModal')">เข้าสู่ระบบ</button>
+        <button class="btn btn-primary" onclick="openModal('registerModal')">สมัครสมาชิก</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="container hero-content">
+      <h1>ค้นหาเที่ยวบินราคาดี<br/>ที่ใช่สำหรับคุณ</h1>
+      <p>เปรียบเทียบราคาตั๋วเครื่องบินจากสายการบินชั้นนำกว่า 50 สายการบิน</p>
+    </div>
+  </section>
+
+  <!-- Search Section -->
+  <section class="search-section" id="search-section">
+    <div class="container">
+      <div class="search-card">
+        <!-- Trip Type Tabs -->
+        <div class="trip-tabs">
+          <button class="trip-tab active" data-type="one-way" onclick="setTripType('one-way')">เที่ยวเดียว</button>
+          <button class="trip-tab" data-type="round-trip" onclick="setTripType('round-trip')">ไป-กลับ</button>
+          <button class="trip-tab" data-type="multi-city" onclick="setTripType('multi-city')">หลายเมือง</button>
+        </div>
+
+        <!-- Search Form -->
+        <form id="searchForm" onsubmit="searchFlights(event)">
+          <div class="search-grid" id="searchGrid">
+            <div class="form-group">
+              <label>จากเมือง / สนามบิน</label>
+              <div class="input-icon">
+                <span class="icon">🛫</span>
+                <input type="text" id="fromCity" placeholder="กรุงเทพฯ (BKK)" list="airports-from" autocomplete="off" required />
+                <datalist id="airports-from"></datalist>
+              </div>
+            </div>
+
+            <button type="button" class="swap-btn" onclick="swapCities()" title="สลับเมือง">⇄</button>
+
+            <div class="form-group">
+              <label>ถึงเมือง / สนามบิน</label>
+              <div class="input-icon">
+                <span class="icon">🛬</span>
+                <input type="text" id="toCity" placeholder="ปลายทาง" list="airports-to" autocomplete="off" required />
+                <datalist id="airports-to"></datalist>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>วันเดินทาง</label>
+              <div class="input-icon">
+                <span class="icon">📅</span>
+                <input type="date" id="departDate" required />
+              </div>
+            </div>
+
+            <div class="form-group" id="returnDateGroup" style="display:none;">
+              <label>วันกลับ</label>
+              <div class="input-icon">
+                <span class="icon">📅</span>
+                <input type="date" id="returnDate" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>ผู้โดยสาร</label>
+              <div class="input-icon passenger-selector" onclick="togglePassengerDropdown()">
+                <span class="icon">👥</span>
+                <input type="text" id="passengerDisplay" value="1 ผู้ใหญ่" readonly />
+                <div class="passenger-dropdown" id="passengerDropdown">
+                  <div class="passenger-row">
+                    <div>
+                      <div class="pax-label">ผู้ใหญ่</div>
+                      <div class="pax-sublabel">อายุ 12 ปีขึ้นไป</div>
+                    </div>
+                    <div class="pax-counter">
+                      <button type="button" onclick="updatePassenger('adult', -1)">−</button>
+                      <span id="adultCount">1</span>
+                      <button type="button" onclick="updatePassenger('adult', 1)">+</button>
+                    </div>
+                  </div>
+                  <div class="passenger-row">
+                    <div>
+                      <div class="pax-label">เด็ก</div>
+                      <div class="pax-sublabel">อายุ 2-11 ปี</div>
+                    </div>
+                    <div class="pax-counter">
+                      <button type="button" onclick="updatePassenger('child', -1)">−</button>
+                      <span id="childCount">0</span>
+                      <button type="button" onclick="updatePassenger('child', 1)">+</button>
+                    </div>
+                  </div>
+                  <div class="passenger-row">
+                    <div>
+                      <div class="pax-label">ทารก</div>
+                      <div class="pax-sublabel">อายุต่ำกว่า 2 ปี</div>
+                    </div>
+                    <div class="pax-counter">
+                      <button type="button" onclick="updatePassenger('infant', -1)">−</button>
+                      <span id="infantCount">0</span>
+                      <button type="button" onclick="updatePassenger('infant', 1)">+</button>
+                    </div>
+                  </div>
+                  <div class="form-group" style="margin-top:12px;">
+                    <label style="font-size:0.85rem;">ชั้นโดยสาร</label>
+                    <select id="cabinClass">
+                      <option value="economy">Economy</option>
+                      <option value="premium-economy">Premium Economy</option>
+                      <option value="business">Business</option>
+                      <option value="first">First Class</option>
+                    </select>
+                  </div>
+                  <button type="button" class="btn btn-primary" style="width:100%;margin-top:8px;" onclick="confirmPassengers()">ยืนยัน</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-search">
+            <span>🔍</span> ค้นหาเที่ยวบิน
+          </button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- Popular Destinations -->
+  <section class="popular-section container">
+    <h2 class="section-title">จุดหมายยอดนิยม</h2>
+    <div class="destinations-grid" id="destinationsGrid"></div>
+  </section>
+
+  <!-- Airlines Section -->
+  <section class="airlines-section">
+    <div class="container">
+      <h2 class="section-title" style="text-align:center;">สายการบินพาร์ทเนอร์</h2>
+      <div class="airlines-logos" id="airlinesLogos"></div>
+    </div>
+  </section>
+
+  <!-- Why Us Section -->
+  <section class="why-us container">
+    <h2 class="section-title" style="text-align:center;">ทำไมต้องเลือก SkyFlight</h2>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">💰</div>
+        <h3>ราคาถูกที่สุด</h3>
+        <p>เปรียบเทียบราคาจากหลายสายการบิน รับประกันราคาดีที่สุด</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔒</div>
+        <h3>ปลอดภัยน่าเชื่อถือ</h3>
+        <p>การชำระเงินที่ปลอดภัยและการยืนยันทันที</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📱</div>
+        <h3>รองรับทุกอุปกรณ์</h3>
+        <p>ใช้งานได้ทั้งบนมือถือ แท็บเล็ต และคอมพิวเตอร์</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🎧</div>
+        <h3>บริการ 24/7</h3>
+        <p>ทีมบริการลูกค้าพร้อมช่วยเหลือตลอด 24 ชั่วโมง</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div class="footer-brand">
+        <a href="index.html" class="logo" style="color:white;">
+          <span class="logo-icon">✈</span>
+          <span>SkyFlight</span>
+        </a>
+        <p>ค้นหาและจองตั๋วเครื่องบินราคาดีที่สุด</p>
+      </div>
+      <div class="footer-links">
+        <h4>บริการ</h4>
+        <ul>
+          <li><a href="#">ค้นหาเที่ยวบิน</a></li>
+          <li><a href="#">โปรโมชั่น</a></li>
+          <li><a href="mybooking.html">การจองของฉัน</a></li>
+          <li><a href="#">Check-in ออนไลน์</a></li>
+        </ul>
+      </div>
+      <div class="footer-links">
+        <h4>เกี่ยวกับเรา</h4>
+        <ul>
+          <li><a href="#">เกี่ยวกับ SkyFlight</a></li>
+          <li><a href="#">นโยบายความเป็นส่วนตัว</a></li>
+          <li><a href="#">เงื่อนไขการใช้งาน</a></li>
+          <li><a href="#">ติดต่อเรา</a></li>
+        </ul>
+      </div>
+      <div class="footer-links">
+        <h4>ช่วยเหลือ</h4>
+        <ul>
+          <li><a href="#">คำถามที่พบบ่อย</a></li>
+          <li><a href="#">นโยบายการยกเลิก</a></li>
+          <li><a href="#">นโยบายสัมภาระ</a></li>
+          <li><a href="#">ติดต่อฝ่ายสนับสนุน</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 SkyFlight. สงวนลิขสิทธิ์ทุกประการ</p>
+    </div>
+  </footer>
+
+  <!-- Login Modal -->
+  <div class="modal" id="loginModal">
+    <div class="modal-overlay" onclick="closeModal('loginModal')"></div>
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeModal('loginModal')">✕</button>
+      <h2>เข้าสู่ระบบ</h2>
+      <form onsubmit="handleLogin(event)">
+        <div class="form-group">
+          <label>อีเมล</label>
+          <input type="email" placeholder="your@email.com" required />
+        </div>
+        <div class="form-group">
+          <label>รหัสผ่าน</label>
+          <input type="password" placeholder="รหัสผ่าน" required />
+        </div>
+        <button type="submit" class="btn btn-primary" style="width:100%;">เข้าสู่ระบบ</button>
+        <p style="text-align:center;margin-top:12px;">
+          ยังไม่มีบัญชี? <a href="#" onclick="switchModal('loginModal','registerModal')">สมัครสมาชิก</a>
+        </p>
+      </form>
+    </div>
+  </div>
+
+  <!-- Register Modal -->
+  <div class="modal" id="registerModal">
+    <div class="modal-overlay" onclick="closeModal('registerModal')"></div>
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeModal('registerModal')">✕</button>
+      <h2>สมัครสมาชิก</h2>
+      <form onsubmit="handleRegister(event)">
+        <div class="form-group">
+          <label>ชื่อ-นามสกุล</label>
+          <input type="text" placeholder="ชื่อ นามสกุล" required />
+        </div>
+        <div class="form-group">
+          <label>อีเมล</label>
+          <input type="email" placeholder="your@email.com" required />
+        </div>
+        <div class="form-group">
+          <label>รหัสผ่าน</label>
+          <input type="password" placeholder="รหัสผ่าน (อย่างน้อย 8 ตัวอักษร)" minlength="8" required />
+        </div>
+        <div class="form-group">
+          <label>เบอร์โทรศัพท์</label>
+          <input type="tel" placeholder="08X-XXX-XXXX" />
+        </div>
+        <button type="submit" class="btn btn-primary" style="width:100%;">สมัครสมาชิก</button>
+        <p style="text-align:center;margin-top:12px;">
+          มีบัญชีอยู่แล้ว? <a href="#" onclick="switchModal('registerModal','loginModal')">เข้าสู่ระบบ</a>
+        </p>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toast"></div>
+
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

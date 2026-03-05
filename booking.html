@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>จองตั๋วเครื่องบิน - SkyFlight</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="container nav-inner">
+      <a href="index.html" class="logo">
+        <span class="logo-icon">✈</span>
+        <span>SkyFlight</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html">หน้าหลัก</a></li>
+        <li><a href="mybooking.html">การจองของฉัน</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Breadcrumb -->
+  <div class="breadcrumb-bar">
+    <div class="container">
+      <div class="steps">
+        <div class="step completed">
+          <span class="step-num">1</span>
+          <span class="step-label">เลือกเที่ยวบิน</span>
+        </div>
+        <div class="step-line"></div>
+        <div class="step active">
+          <span class="step-num">2</span>
+          <span class="step-label">กรอกข้อมูลผู้โดยสาร</span>
+        </div>
+        <div class="step-line"></div>
+        <div class="step">
+          <span class="step-num">3</span>
+          <span class="step-label">ชำระเงิน</span>
+        </div>
+        <div class="step-line"></div>
+        <div class="step">
+          <span class="step-num">4</span>
+          <span class="step-label">ยืนยัน</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Booking Layout -->
+  <div class="booking-layout container">
+
+    <!-- Booking Form -->
+    <div class="booking-main">
+
+      <!-- Flight Summary -->
+      <div class="booking-card" id="flightSummaryCard">
+        <h3>เที่ยวบินที่เลือก</h3>
+        <div id="selectedFlightSummary">กำลังโหลด...</div>
+      </div>
+
+      <!-- Passenger Form -->
+      <div class="booking-card">
+        <h3>ข้อมูลผู้โดยสาร</h3>
+        <div id="passengerForms"></div>
+      </div>
+
+      <!-- Contact Info -->
+      <div class="booking-card">
+        <h3>ข้อมูลติดต่อ</h3>
+        <div class="form-row">
+          <div class="form-group">
+            <label>อีเมล (สำหรับรับ e-ticket)</label>
+            <input type="email" id="contactEmail" placeholder="your@email.com" required />
+          </div>
+          <div class="form-group">
+            <label>เบอร์โทรศัพท์</label>
+            <input type="tel" id="contactPhone" placeholder="08X-XXX-XXXX" required />
+          </div>
+        </div>
+      </div>
+
+      <!-- Add-ons -->
+      <div class="booking-card">
+        <h3>บริการเสริม</h3>
+        <div class="addons-grid">
+          <label class="addon-card">
+            <input type="checkbox" id="addon-baggage" onchange="updatePrice()" />
+            <div class="addon-content">
+              <span class="addon-icon">🧳</span>
+              <div>
+                <div class="addon-name">สัมภาระเพิ่มเติม 20 กก.</div>
+                <div class="addon-price">+800 บาท/คน</div>
+              </div>
+            </div>
+          </label>
+          <label class="addon-card">
+            <input type="checkbox" id="addon-meal" onchange="updatePrice()" />
+            <div class="addon-content">
+              <span class="addon-icon">🍱</span>
+              <div>
+                <div class="addon-name">อาหารบนเครื่อง</div>
+                <div class="addon-price">+350 บาท/คน</div>
+              </div>
+            </div>
+          </label>
+          <label class="addon-card">
+            <input type="checkbox" id="addon-seat" onchange="updatePrice()" />
+            <div class="addon-content">
+              <span class="addon-icon">💺</span>
+              <div>
+                <div class="addon-name">เลือกที่นั่ง</div>
+                <div class="addon-price">+250 บาท/คน</div>
+              </div>
+            </div>
+          </label>
+          <label class="addon-card">
+            <input type="checkbox" id="addon-insurance" onchange="updatePrice()" />
+            <div class="addon-content">
+              <span class="addon-icon">🛡️</span>
+              <div>
+                <div class="addon-name">ประกันการเดินทาง</div>
+                <div class="addon-price">+199 บาท/คน</div>
+              </div>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      <button class="btn btn-primary btn-lg" onclick="proceedToPayment()">
+        ดำเนินการชำระเงิน →
+      </button>
+    </div>
+
+    <!-- Price Summary Sidebar -->
+    <aside class="price-sidebar">
+      <div class="price-card sticky-card">
+        <h3>สรุปราคา</h3>
+        <div id="priceSummaryItems"></div>
+        <div class="price-divider"></div>
+        <div class="price-total-row">
+          <span>รวมทั้งสิ้น</span>
+          <span class="price-total" id="totalPrice">0 บาท</span>
+        </div>
+        <div class="price-note">ราคารวม VAT และภาษีสนามบินแล้ว</div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- Payment Modal -->
+  <div class="modal" id="paymentModal">
+    <div class="modal-overlay" onclick="closeModal('paymentModal')"></div>
+    <div class="modal-content modal-wide">
+      <button class="modal-close" onclick="closeModal('paymentModal')">✕</button>
+      <h2>ชำระเงิน</h2>
+
+      <div class="payment-methods">
+        <button class="payment-method active" onclick="selectPayment('card', this)">
+          💳 บัตรเครดิต/เดบิต
+        </button>
+        <button class="payment-method" onclick="selectPayment('promptpay', this)">
+          📱 พร้อมเพย์
+        </button>
+        <button class="payment-method" onclick="selectPayment('bank', this)">
+          🏦 โอนผ่านธนาคาร
+        </button>
+      </div>
+
+      <div id="cardPaymentForm">
+        <div class="form-group">
+          <label>ชื่อบนบัตร</label>
+          <input type="text" placeholder="ชื่อ นามสกุล (ตามบัตร)" />
+        </div>
+        <div class="form-group">
+          <label>หมายเลขบัตร</label>
+          <input type="text" placeholder="XXXX XXXX XXXX XXXX" maxlength="19" oninput="formatCardNumber(this)" />
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>วันหมดอายุ</label>
+            <input type="text" placeholder="MM/YY" maxlength="5" oninput="formatExpiry(this)" />
+          </div>
+          <div class="form-group">
+            <label>CVV</label>
+            <input type="text" placeholder="XXX" maxlength="3" />
+          </div>
+        </div>
+      </div>
+
+      <div id="promptpayForm" style="display:none; text-align:center;">
+        <div class="qr-placeholder">
+          <div class="qr-box">
+            <div style="font-size:80px;">📱</div>
+            <p>สแกน QR Code เพื่อชำระเงิน</p>
+            <div class="qr-amount" id="qrAmount"></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="bankTransferForm" style="display:none;">
+        <div class="bank-info">
+          <p><strong>ธนาคารกสิกรไทย</strong></p>
+          <p>เลขที่บัญชี: <strong>123-4-56789-0</strong></p>
+          <p>ชื่อบัญชี: <strong>SkyFlight Thailand Co., Ltd.</strong></p>
+          <p class="bank-note">กรุณาโอนภายใน 30 นาที และส่งหลักฐานการโอนมาที่ support@skyflight.th</p>
+        </div>
+      </div>
+
+      <div class="payment-total">
+        ยอดชำระ: <strong id="paymentTotalAmount"></strong>
+      </div>
+
+      <button class="btn btn-primary btn-lg" style="width:100%;" onclick="confirmPayment()">
+        ยืนยันการชำระเงิน
+      </button>
+    </div>
+  </div>
+
+  <!-- Confirmation Modal -->
+  <div class="modal" id="confirmModal">
+    <div class="modal-overlay"></div>
+    <div class="modal-content" style="text-align:center;">
+      <div class="success-icon">✅</div>
+      <h2>จองตั๋วสำเร็จ!</h2>
+      <p>หมายเลขการจอง: <strong id="bookingRef"></strong></p>
+      <p>เราได้ส่ง e-ticket ไปยังอีเมลของคุณแล้ว</p>
+      <div style="margin-top:20px; display:flex; gap:12px; justify-content:center;">
+        <a href="mybooking.html" class="btn btn-primary">ดูการจองของฉัน</a>
+        <a href="index.html" class="btn btn-outline">กลับหน้าหลัก</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="js/data.js"></script>
+  <script src="js/booking.js"></script>
+</body>
+</html>

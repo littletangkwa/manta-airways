@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>การจองของฉัน - SkyFlight</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="container nav-inner">
+      <a href="index.html" class="logo">
+        <span class="logo-icon">✈</span>
+        <span>SkyFlight</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html">หน้าหลัก</a></li>
+        <li><a href="index.html#search-section">ค้นหาเที่ยวบิน</a></li>
+        <li><a href="mybooking.html" class="active">การจองของฉัน</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="container" style="padding-top: 40px; padding-bottom: 60px;">
+    <h1 style="margin-bottom:8px;">การจองของฉัน</h1>
+    <p style="color:var(--text-secondary); margin-bottom:32px;">ติดตามและจัดการการจองทั้งหมดของคุณ</p>
+
+    <!-- Booking Tabs -->
+    <div class="trip-tabs" style="margin-bottom:24px;">
+      <button class="trip-tab active" onclick="showBookings('upcoming', this)">ที่จะมาถึง</button>
+      <button class="trip-tab" onclick="showBookings('completed', this)">เสร็จสิ้น</button>
+      <button class="trip-tab" onclick="showBookings('cancelled', this)">ยกเลิกแล้ว</button>
+    </div>
+
+    <div id="bookingsList"></div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+  <script src="js/data.js"></script>
+  <script src="js/mybooking.js"></script>
+</body>
+</html>

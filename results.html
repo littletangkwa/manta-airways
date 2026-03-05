@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ผลการค้นหาเที่ยวบิน - SkyFlight</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="container nav-inner">
+      <a href="index.html" class="logo">
+        <span class="logo-icon">✈</span>
+        <span>SkyFlight</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html">หน้าหลัก</a></li>
+        <li><a href="index.html#search-section" class="active">ค้นหาเที่ยวบิน</a></li>
+        <li><a href="mybooking.html">การจองของฉัน</a></li>
+      </ul>
+      <div class="nav-actions">
+        <button class="btn btn-outline" onclick="openModal('loginModal')">เข้าสู่ระบบ</button>
+        <button class="btn btn-primary" onclick="openModal('registerModal')">สมัครสมาชิก</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Search Summary Bar -->
+  <div class="search-summary-bar">
+    <div class="container search-summary-inner">
+      <div class="summary-route">
+        <span id="summaryFrom">BKK</span>
+        <span class="route-arrow">→</span>
+        <span id="summaryTo">HKT</span>
+      </div>
+      <div class="summary-details">
+        <span id="summaryDate">-</span>
+        <span class="dot">•</span>
+        <span id="summaryPax">-</span>
+        <span class="dot">•</span>
+        <span id="summaryCabin">-</span>
+      </div>
+      <button class="btn btn-outline btn-sm" onclick="window.location.href='index.html'">แก้ไขการค้นหา</button>
+    </div>
+  </div>
+
+  <!-- Results Layout -->
+  <div class="results-layout container">
+
+    <!-- Filters Sidebar -->
+    <aside class="filters-sidebar">
+      <div class="filter-header">
+        <h3>กรองผลการค้นหา</h3>
+        <button class="btn-text" onclick="clearFilters()">ล้างทั้งหมด</button>
+      </div>
+
+      <!-- Price Range -->
+      <div class="filter-group">
+        <h4>ช่วงราคา (บาท)</h4>
+        <div class="price-range">
+          <input type="range" id="priceRange" min="0" max="50000" value="50000" oninput="filterFlights()" />
+          <div class="price-labels">
+            <span>0</span>
+            <span id="priceRangeLabel">50,000</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Airlines Filter -->
+      <div class="filter-group">
+        <h4>สายการบิน</h4>
+        <div id="airlineFilters"></div>
+      </div>
+
+      <!-- Departure Time -->
+      <div class="filter-group">
+        <h4>เวลาออกเดินทาง</h4>
+        <div class="time-filter-grid" id="timeFilters">
+          <button class="time-filter active" data-time="all" onclick="setTimeFilter('all', this)">ทั้งหมด</button>
+          <button class="time-filter" data-time="morning" onclick="setTimeFilter('morning', this)">เช้า (00-12)</button>
+          <button class="time-filter" data-time="afternoon" onclick="setTimeFilter('afternoon', this)">บ่าย (12-18)</button>
+          <button class="time-filter" data-time="evening" onclick="setTimeFilter('evening', this)">เย็น (18-24)</button>
+        </div>
+      </div>
+
+      <!-- Stops Filter -->
+      <div class="filter-group">
+        <h4>จำนวนจุดแวะพัก</h4>
+        <div class="checkbox-group" id="stopsFilters">
+          <label class="checkbox-label">
+            <input type="checkbox" value="0" checked onchange="filterFlights()" /> ตรง (Nonstop)
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" value="1" checked onchange="filterFlights()" /> แวะ 1 จุด
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" value="2" checked onchange="filterFlights()" /> แวะ 2 จุดขึ้นไป
+          </label>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Results Main -->
+    <main class="results-main">
+      <!-- Sort Bar -->
+      <div class="sort-bar">
+        <span id="resultsCount">กำลังค้นหา...</span>
+        <div class="sort-options">
+          <span>เรียงตาม:</span>
+          <button class="sort-btn active" data-sort="price" onclick="sortFlights('price', this)">ราคา</button>
+          <button class="sort-btn" data-sort="duration" onclick="sortFlights('duration', this)">ระยะเวลา</button>
+          <button class="sort-btn" data-sort="depart" onclick="sortFlights('depart', this)">เวลาออก</button>
+          <button class="sort-btn" data-sort="arrive" onclick="sortFlights('arrive', this)">เวลาถึง</button>
+        </div>
+      </div>
+
+      <!-- Flight List -->
+      <div id="flightList"></div>
+
+      <!-- No Results -->
+      <div id="noResults" style="display:none;" class="no-results">
+        <div class="no-results-icon">✈️</div>
+        <h3>ไม่พบเที่ยวบิน</h3>
+        <p>ลองเปลี่ยนเงื่อนไขการค้นหาหรือวันเดินทาง</p>
+        <a href="index.html" class="btn btn-primary">ค้นหาใหม่</a>
+      </div>
+    </main>
+  </div>
+
+  <!-- Login Modal -->
+  <div class="modal" id="loginModal">
+    <div class="modal-overlay" onclick="closeModal('loginModal')"></div>
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeModal('loginModal')">✕</button>
+      <h2>เข้าสู่ระบบ</h2>
+      <form onsubmit="handleLogin(event)">
+        <div class="form-group">
+          <label>อีเมล</label>
+          <input type="email" placeholder="your@email.com" required />
+        </div>
+        <div class="form-group">
+          <label>รหัสผ่าน</label>
+          <input type="password" placeholder="รหัสผ่าน" required />
+        </div>
+        <button type="submit" class="btn btn-primary" style="width:100%;">เข้าสู่ระบบ</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Register Modal -->
+  <div class="modal" id="registerModal">
+    <div class="modal-overlay" onclick="closeModal('registerModal')"></div>
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeModal('registerModal')">✕</button>
+      <h2>สมัครสมาชิก</h2>
+      <form onsubmit="handleRegister(event)">
+        <div class="form-group">
+          <label>ชื่อ-นามสกุล</label>
+          <input type="text" placeholder="ชื่อ นามสกุล" required />
+        </div>
+        <div class="form-group">
+          <label>อีเมล</label>
+          <input type="email" placeholder="your@email.com" required />
+        </div>
+        <div class="form-group">
+          <label>รหัสผ่าน</label>
+          <input type="password" placeholder="รหัสผ่าน" minlength="8" required />
+        </div>
+        <button type="submit" class="btn btn-primary" style="width:100%;">สมัครสมาชิก</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="js/data.js"></script>
+  <script src="js/results.js"></script>
+</body>
+</html>
