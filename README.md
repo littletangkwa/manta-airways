@@ -60,12 +60,15 @@ manta-airways
 To learn more about Next.js, check out:
 
 https://nextjs.org/docs
+
  – Next.js Documentation
 
 https://nextjs.org/learn
+
  – Interactive Next.js Tutorial
 
 https://github.com/vercel/next.js
+
  – Next.js GitHub Repository
 
 🚀 Deployment
